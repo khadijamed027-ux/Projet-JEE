@@ -9,6 +9,7 @@ public class ONG {
     private String description;
     private StatutValidation statutValidation;
     private LocalDateTime dateCreation;
+    private Long userId;
 
     public ONG() {}
 
@@ -34,6 +35,15 @@ public class ONG {
 
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
+    
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
 
     @Override
     public String toString() {

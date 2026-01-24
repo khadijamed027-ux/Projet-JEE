@@ -24,7 +24,6 @@ public class AdminServlet extends HttpServlet {
         ong.setDescription(request.getParameter("description"));
         ong.setStatutValidation(StatutValidation.VALIDEE);
 
-        ongDAO.save(ong);
-        response.sendRedirect("../admin.jsp");
+        
     }
 }

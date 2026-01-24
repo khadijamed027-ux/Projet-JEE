@@ -12,15 +12,23 @@ import java.io.IOException;
 
 @WebServlet("/case/create")
 public class CaseReportServlet extends HttpServlet {
+	
 
     private CaseService caseService = new CaseService();
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession();
+        // Vérifier si l'utilisateur est connecté
+        HttpSession session = req.getSession(false); // ne crée pas de session si elle n'existe pas
+        if (session == null || session.getAttribute("user") == null) {
+            resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp");
+            return; // arrêter l'exécution si pas connecté
+        }
+
         User user = (User) session.getAttribute("user");
 
+        // Création du cas
         CaseReport c = new CaseReport();
         c.setTitre(req.getParameter("titre"));
         c.setDescription(req.getParameter("description"));
@@ -29,6 +37,8 @@ public class CaseReportServlet extends HttpServlet {
         c.setUserId(user.getId());
 
         caseService.createCase(c);
-        resp.sendRedirect("../jsp/user/dashboard.jsp");
+
+        // Redirection vers le dashboard utilisateur
+        resp.sendRedirect(req.getContextPath() + "/jsp/user/dashboard.jsp");
     }
 }
