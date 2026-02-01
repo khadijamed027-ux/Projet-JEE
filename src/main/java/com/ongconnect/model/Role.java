@@ -1,8 +1,7 @@
 package com.ongconnect.model;
 
 public enum Role {
-	ADMIN,
+    DONATEUR,
     ONG,
-    UTILISATEUR
-   
+    ADMIN
 }

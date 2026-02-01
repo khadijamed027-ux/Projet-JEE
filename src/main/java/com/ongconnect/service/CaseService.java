@@ -1,19 +1,19 @@
 package com.ongconnect.service;
 
-import com.ongconnect.dao.CaseReportDAO;
 import com.ongconnect.model.CaseReport;
-
 import java.util.List;
 
-public class CaseService {
+public interface CaseService {
 
-    private CaseReportDAO caseDAO = new CaseReportDAO();
+    void createCase(CaseReport c);
 
-    public void createCase(CaseReport c) {
-        caseDAO.save(c);
-    }
+    List<CaseReport> getCasesForOng(Long ongId);
 
-    public List<CaseReport> getCasesByONG(long ongId) {
-        return caseDAO.findByONG(ongId);
-    }
+    List<CaseReport> getPublicCasesByOng(Long ongId);
+
+    List<CaseReport> getAllPublicCases();
+    
+    CaseReport getCaseById(Long id);
+    int countCases();
+
 }

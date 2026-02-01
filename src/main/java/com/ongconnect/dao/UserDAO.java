@@ -1,58 +1,77 @@
 package com.ongconnect.dao;
 
-import com.ongconnect.model.User;
 import com.ongconnect.model.Role;
+import com.ongconnect.model.User;
 
 import java.sql.*;
 
 public class UserDAO {
 
-    // Enregistrement utilisateur
-	public void save(User user) {
-	    String sql = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, ?, ?)";
+    // 🔹 Inscription
+    public void save(User user) {
+        String sql = """
+            INSERT INTO users (nom, email, password, role, telephone)
+            VALUES (?, ?, ?, ?, ?)
+        """;
 
-	    try (Connection conn = DBConnection.getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
-	        ps.setString(1, user.getNom());
-	        ps.setString(2, user.getEmail());
-	        ps.setString(3, user.getPassword());
-	        ps.setString(4, user.getRole().name());
+            ps.setString(1, user.getNom());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getRole().name());
+            ps.setString(5, user.getTelephone());
 
-	        int rows = ps.executeUpdate(); // ✅ CORRECT
+            ps.executeUpdate();
 
-	        if (rows > 0) {
-	            System.out.println("✅ Utilisateur inséré avec succès");
-	        }
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
-
-    // Authentification
-    public User findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-        User user = null;
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, email);
-            ps.setString(2, password);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getLong("id"));
-                user.setNom(rs.getString("nom"));
-                user.setEmail(rs.getString("email"));
-                user.setRole(Role.valueOf(rs.getString("role")));
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return user;
     }
+
+    // 🔹 Login
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                User u = new User();
+                u.setId(rs.getLong("id"));
+                u.setNom(rs.getString("nom"));
+                u.setEmail(rs.getString("email"));
+                u.setPassword(rs.getString("password")); // IMPORTANT
+                u.setTelephone(rs.getString("telephone"));
+                u.setRole(Role.valueOf(rs.getString("role")));
+                return u;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateTelephone(Long userId, String telephone) {
+        String sql = "UPDATE users SET telephone = ? WHERE id = ?";
+
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, telephone);
+            ps.setLong(2, userId);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
 }

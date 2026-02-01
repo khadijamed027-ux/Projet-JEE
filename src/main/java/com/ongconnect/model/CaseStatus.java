@@ -1,9 +1,7 @@
 package com.ongconnect.model;
 
 public enum CaseStatus {
-    SIGNALE,
-    ACCEPTE,
+    EN_ATTENTE,
     EN_COURS,
-    RESOLU,
-    REJETE
+    RESOLU
 }

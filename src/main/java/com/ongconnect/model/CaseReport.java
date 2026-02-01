@@ -10,23 +10,12 @@ public class CaseReport {
     private String localisation;
     private CaseStatus statut;
     private LocalDateTime dateCreation;
+    private TypeCase typeCase;
 
-    private Long userId;
+    // ✅ LE CAS APPARTIENT À UNE ONG
     private Long ongId;
 
     public CaseReport() {}
-
-    public CaseReport(Long id, String titre, String description, String localisation,
-                      CaseStatus statut, LocalDateTime dateCreation, Long userId, Long ongId) {
-        this.id = id;
-        this.titre = titre;
-        this.description = description;
-        this.localisation = localisation;
-        this.statut = statut;
-        this.dateCreation = dateCreation;
-        this.userId = userId;
-        this.ongId = ongId;
-    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -46,14 +35,9 @@ public class CaseReport {
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public TypeCase getTypeCase() { return typeCase; }
+    public void setTypeCase(TypeCase typeCase) { this.typeCase = typeCase; }
 
     public Long getOngId() { return ongId; }
     public void setOngId(Long ongId) { this.ongId = ongId; }
-
-    @Override
-    public String toString() {
-        return "CaseReport{id=" + id + ", titre='" + titre + "', statut=" + statut + "}";
-    }
 }

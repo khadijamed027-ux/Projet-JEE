@@ -1,19 +1,11 @@
 package com.ongconnect.service;
 
-import com.ongconnect.dao.ONGDAO;
 import com.ongconnect.model.ONG;
-
 import java.util.List;
 
-public class ONGService {
+public interface ONGService {
 
-    private ONGDAO ongDAO = new ONGDAO();
+    List<ONG> getValidatedONGs();
 
-    public List<ONG> getPendingONGs() {
-        return ongDAO.findPending();
-    }
-
-    public void validateONG(long id, String status) {
-        ongDAO.updateStatus(id, status);
-    }
+    void validateONG(Long ongId);
 }

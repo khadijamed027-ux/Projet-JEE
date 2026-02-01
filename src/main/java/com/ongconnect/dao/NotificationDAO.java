@@ -9,10 +9,13 @@ import java.util.List;
 public class NotificationDAO {
 
     public void save(Notification n) {
-        String sql = "INSERT INTO notification (message, lu, user_id, ong_id) VALUES (?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO notification (message, lu, user_id, ong_id)
+            VALUES (?, ?, ?, ?)
+        """;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, n.getMessage());
             ps.setBoolean(2, n.isLu());
@@ -20,6 +23,7 @@ public class NotificationDAO {
             ps.setObject(4, n.getOngId());
 
             ps.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -27,10 +31,11 @@ public class NotificationDAO {
 
     public List<Notification> findByUser(Long userId) {
         List<Notification> list = new ArrayList<>();
+
         String sql = "SELECT * FROM notification WHERE user_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -40,8 +45,12 @@ public class NotificationDAO {
                 n.setId(rs.getLong("id"));
                 n.setMessage(rs.getString("message"));
                 n.setLu(rs.getBoolean("lu"));
+                n.setUserId(rs.getLong("user_id"));
+                n.setOngId(rs.getObject("ong_id") != null ? rs.getLong("ong_id") : null);
+
                 list.add(n);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

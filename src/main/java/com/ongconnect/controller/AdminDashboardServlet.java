@@ -1,40 +1,48 @@
 package com.ongconnect.controller;
+
+import com.ongconnect.dao.CaseReportDAO;
 import com.ongconnect.dao.ONGDAO;
-import com.ongconnect.model.ONG;
-import com.ongconnect.model.StatutValidation;
+import com.ongconnect.model.*;
+import com.ongconnect.service.CaseService;
+import com.ongconnect.service.impl.CaseServiceImpl;
+import com.ongconnect.dao.DonationDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import com.ongconnect.model.Role;
-import com.ongconnect.model.User;
-import com.ongconnect.model.CaseReport;
-import com.ongconnect.dao.CaseReportDAO;
 
 import java.io.IOException;
+import java.util.List;
+
 @WebServlet("/admin/dashboard")
 public class AdminDashboardServlet extends HttpServlet {
 
     private final ONGDAO ongDAO = new ONGDAO();
-    private final CaseReportDAO caseDAO = new CaseReportDAO();
+    private CaseService caseService = new CaseServiceImpl();
+    private DonationDAO donationDAO = new DonationDAO();
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         User admin = (User) req.getSession().getAttribute("user");
-        if(admin == null || admin.getRole() != Role.ADMIN) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp");
+        if (admin == null || admin.getRole() != Role.ADMIN) {
+            resp.sendRedirect(req.getContextPath() + "/views/auth/login.jsp");
             return;
         }
 
-        // 🔹 ONG validées (statut non null et user_id != null)
-        req.setAttribute("ongs", ongDAO.findAll()); // Assurez-vous que findAll() retourne toutes les ONG
+        req.setAttribute("pendingOngs", ongDAO.findPending());
 
-        // 🔹 Cas signalés (ong_id NULL et statut SIGNALE)
-        req.setAttribute("cases", caseDAO.findCasesToAssign());
+        req.setAttribute("cases", caseService.getAllPublicCases());
+        req.setAttribute("totalOngs", ongDAO.countONGs());
+        req.setAttribute("totalCases", caseService.countCases());
+        req.setAttribute("totalDonations", donationDAO.countDonations());
 
-        req.getRequestDispatcher("/jsp/admin/admin-dashboard.jsp")
+
+        req.getRequestDispatcher("/views/admin/admin-dashboard.jsp")
            .forward(req, resp);
+        
+        
     }
 }

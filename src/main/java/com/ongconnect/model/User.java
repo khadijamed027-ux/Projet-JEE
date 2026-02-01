@@ -8,20 +8,11 @@ public class User {
     private String nom;
     private String email;
     private String password;
+    private String telephone;
     private Role role;
     private LocalDateTime dateCreation;
 
-    public User() {
-    }
-
-    public User(Long id, String nom, String email, String password, Role role, LocalDateTime dateCreation) {
-        this.id = id;
-        this.nom = nom;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.dateCreation = dateCreation;
-    }
+    public User() {}
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -35,14 +26,24 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
 
     public LocalDateTime getDateCreation() { return dateCreation; }
-    public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
-
+    public void setDateCreation(LocalDateTime dateCreation) {
+        this.dateCreation = dateCreation;
+    }
     @Override
     public String toString() {
-        return "User{id=" + id + ", nom='" + nom + "', email='" + email + "', role=" + role + "}";
+        return "User{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                '}';
     }
+
 }

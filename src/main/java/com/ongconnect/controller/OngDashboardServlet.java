@@ -1,15 +1,14 @@
 package com.ongconnect.controller;
 
-import com.ongconnect.dao.CaseReportDAO;
 import com.ongconnect.dao.ONGDAO;
-import com.ongconnect.model.CaseReport;
-import com.ongconnect.model.Role;
-import com.ongconnect.model.User;
-import com.ongconnect.model.ONG;
+import com.ongconnect.model.*;
+import com.ongconnect.service.CaseService;
+import com.ongconnect.service.impl.CaseServiceImpl;
 
-import jakarta.servlet.*;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
 public class OngDashboardServlet extends HttpServlet {
 
     private final ONGDAO ongDAO = new ONGDAO();
-    private final CaseReportDAO caseDAO = new CaseReportDAO();
+    private CaseService caseService = new CaseServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -25,21 +24,30 @@ public class OngDashboardServlet extends HttpServlet {
 
         User user = (User) req.getSession().getAttribute("user");
 
+        // 🔐 Sécurité
         if (user == null || user.getRole() != Role.ONG) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/views/auth/login.jsp");
             return;
         }
+
+        // 🔍 ONG liée à l’utilisateur
+        
 
         ONG ong = ongDAO.findByUserId(user.getId());
+
         if (ong == null) {
-            req.setAttribute("error", "Aucune ONG trouvée pour cet utilisateur.");
-            req.getRequestDispatcher("/error.jsp").forward(req, resp);
+            resp.sendRedirect(req.getContextPath() + "/ong/create-ong.jsp");
             return;
         }
 
-        // Tous les cas assignés à cette ONG
-        req.setAttribute("cases", caseDAO.findCasesForOng(ong.getId()));
 
-        req.getRequestDispatcher("/jsp/ong/ong-dashboard.jsp").forward(req, resp);
+        // 📦 Tous les cas de l’ONG
+        List<CaseReport> cases = caseService.getCasesForOng(ong.getId());
+
+        req.setAttribute("ong", ong);
+        req.setAttribute("cases", cases);
+
+        req.getRequestDispatcher("/views/ong/ong-dashboard.jsp")
+           .forward(req, resp);
     }
 }
