@@ -1,5 +1,8 @@
 package com.ongconnect.controller;
 
+import com.ongconnect.dao.ONGDAO;
+import com.ongconnect.model.ONG;
+import com.ongconnect.model.StatutValidation;
 import com.ongconnect.model.User;
 import com.ongconnect.service.CaseService;
 import com.ongconnect.service.UserService;
@@ -39,7 +42,25 @@ public class LoginServlet extends HttpServlet {
                 break;
 
             case ONG:
-                resp.sendRedirect(req.getContextPath() + "/public/ong");
+
+                // Vérifier si l'ONG existe et son statut
+                ONGDAO ongDAO = new ONGDAO();
+                ONG ong = ongDAO.findByUserId(user.getId());
+
+                if (ong == null) {
+                    // Pas encore créé son ONG
+                    resp.sendRedirect(req.getContextPath() + "/views/ong/create-ong.jsp");
+                    return;
+                }
+
+                if (ong.getStatutValidation() != StatutValidation.VALIDEE) {
+                    // ⛔ PAS VALIDÉ = page d’attente
+                    resp.sendRedirect(req.getContextPath() + "/views/ong/attente.jsp");
+                    return;
+                }
+
+                // ✅ OK → dashboard
+                resp.sendRedirect(req.getContextPath() + "/ong/dashboard");
                 break;
 
             default:

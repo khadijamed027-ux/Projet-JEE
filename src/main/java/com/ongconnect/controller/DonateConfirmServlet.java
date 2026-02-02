@@ -2,6 +2,7 @@ package com.ongconnect.controller;
 
 import com.ongconnect.dao.DonationDAO;
 import com.ongconnect.model.Donation;
+import com.ongconnect.model.User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,7 +28,13 @@ public class DonateConfirmServlet extends HttpServlet {
             d.setMontant(montant);
 
             // 🔹 Donateur ANONYME
-            d.setDonorId(null);
+            User u = (User) req.getSession().getAttribute("user");
+
+            if (u != null) {
+                d.setDonorId(u.getId());
+            } else {
+                d.setDonorId(1L); // compte "donateur anonyme" par défaut
+            }
 
             donationDAO.save(d);
 
