@@ -75,5 +75,28 @@ public class DonationDAO {
 
         return list;
     }
+    public double sumByMonth(int month) {
+
+        String sql = """
+            SELECT COALESCE(SUM(montant),0)
+            FROM donation
+            WHERE MONTH(date_donation) = ?
+        """;
+
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, month);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) return rs.getDouble(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 
 }

@@ -2,9 +2,12 @@ package com.ongconnect.controller;
 
 import java.io.IOException;
 
+import com.ongconnect.dao.NotificationDAO;
 import com.ongconnect.dao.ONGDAO;
 import com.ongconnect.model.CaseReport;
 import com.ongconnect.model.CaseStatus;
+import com.ongconnect.model.NiveauUrgence;
+import com.ongconnect.model.Notification;
 import com.ongconnect.model.ONG;
 import com.ongconnect.model.Role;
 import com.ongconnect.model.StatutValidation;
@@ -22,55 +25,53 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/ong/case/create")
 public class CreateCaseServlet extends HttpServlet {
 
-	private CaseService caseService = new CaseServiceImpl();    
-	private ONGDAO ongDAO = new ONGDAO();
+    private CaseService caseService = new CaseServiceImpl();
+    private ONGDAO ongDAO = new ONGDAO();
+    private NotificationDAO notifDAO = new NotificationDAO();
 
-    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         User user = (User) req.getSession().getAttribute("user");
 
-        // Sécurité
         if (user == null || user.getRole() != Role.ONG) {
-            resp.sendRedirect(req.getContextPath() + "/views/auth/login.jsp");
+            resp.sendRedirect(req.getContextPath()+"/views/auth/login.jsp");
             return;
         }
 
         ONG ong = ongDAO.findByUserId(user.getId());
 
         CaseReport c = new CaseReport();
+
         c.setTitre(req.getParameter("titre"));
-        String titre = req.getParameter("titre");
-        String description = req.getParameter("description");
-
-        if (titre == null || titre.trim().isEmpty()
-                || description == null || description.trim().isEmpty()) {
-
-            req.setAttribute("error", "Tous les champs sont obligatoires");
-            req.getRequestDispatcher("/views/ong/ong-dashboard.jsp")
-               .forward(req, resp);
-            return;
-        }
-
         c.setDescription(req.getParameter("description"));
         c.setLocalisation(req.getParameter("localisation"));
-        c.setTypeCase(TypeCase.valueOf(req.getParameter("typeCase")));
-        
-        if (ong.getStatutValidation() != StatutValidation.VALIDEE) {
-            req.setAttribute("error", "Votre ONG n'est pas encore validée par l'administrateur.");
-            req.getRequestDispatcher("/views/ong/ong-dashboard.jsp")
-               .forward(req, resp);
-            return;
-        }
 
+        c.setTypeCase(
+            TypeCase.valueOf(req.getParameter("typeCase"))
+        );
 
-        // ✅ LOGIQUE MÉTIER
-        c.setStatut(CaseStatus.EN_COURS); // ou EN_COURS
+        c.setNiveauUrgence(
+            NiveauUrgence.valueOf(req.getParameter("niveauUrgence"))
+        );
+
+        c.setStatut(CaseStatus.EN_COURS);
         c.setOngId(ong.getId());
 
+        // SAUVEGARDE DU CAS
         caseService.createCase(c);
 
-        resp.sendRedirect(req.getContextPath() + "/ong/dashboard");
+        // 🔔 NOTIFICATION SI ÉLEVÉE OU CRITIQUE
+        if (c.getNiveauUrgence() == NiveauUrgence.ELEVEE ||
+            c.getNiveauUrgence() == NiveauUrgence.CRITIQUE) {
+
+            Notification n = new Notification();
+            n.setMessage("🚨 Nouveau cas URGENT : " + c.getTitre());
+            n.setUserId(1L); // ADMIN
+
+            notifDAO.save(n);
+        }
+
+        resp.sendRedirect(req.getContextPath()+"/ong/dashboard");
     }
 }

@@ -37,6 +37,15 @@ public class DonateServlet extends HttpServlet {
             return;
         }
 
+        // 🔴 BLOCAGE ICI
+        if (c.isBloque()) {
+            req.setAttribute("message",
+                "⚠️ Objectif atteint ! Les dons sont fermés pour ce cas.");
+            req.getRequestDispatcher("/views/public/donate-closed.jsp")
+               .forward(req, resp);
+            return;
+        }
+
         req.setAttribute("cas", c);
         req.getRequestDispatcher("/views/public/donate.jsp")
            .forward(req, resp);

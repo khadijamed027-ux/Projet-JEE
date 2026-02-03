@@ -1,6 +1,8 @@
 package com.ongconnect.controller;
 
+import com.ongconnect.dao.NotificationDAO;
 import com.ongconnect.dao.ONGDAO;
+import com.ongconnect.model.Notification;
 import com.ongconnect.model.ONG;
 import com.ongconnect.model.Role;
 import com.ongconnect.model.StatutValidation;
@@ -52,6 +54,16 @@ public class CreateONGServlet extends HttpServlet {
 
 
         ongDAO.create(ong);
+     // 🔔 Notification pour ADMIN
+        NotificationDAO notifDAO = new NotificationDAO();
+
+        Notification n = new Notification();
+        n.setMessage("Nouvelle ONG inscrite : " + nom);
+        n.setUserId(28L);   // ID ADMIN (dans ta base = 28)
+        n.setLu(false);
+
+        notifDAO.save(n);
+
 
         resp.sendRedirect(req.getContextPath() + "/ong/dashboard");
     }

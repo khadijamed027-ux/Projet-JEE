@@ -125,13 +125,21 @@ textarea {
            placeholder="Ville / Région"
            required />
 
-    <label>Domaine</label>
-    <select name="typeCase" required>
-        <option value="">-- Choisir --</option>
-        <option value="SANTE">Santé</option>
-        <option value="EDUCATION">Éducation</option>
-        <option value="ENVIRONNEMENT">Environnement</option>
-    </select>
+    <label>Type du cas</label>
+<select name="typeCase" required>
+    <option value="SANTE">Santé</option>
+    <option value="EDUCATION">Éducation</option>
+    <option value="ENVIRONNEMENT">Environnement</option>
+</select>
+
+<label>Niveau d'urgence</label>
+<select name="niveauUrgence" required>
+  <option value="FAIBLE">Faible</option>
+  <option value="MOYENNE">Moyenne</option>
+  <option value="ELEVEE">Élevée</option>
+  <option value="CRITIQUE">Critique</option>
+</select>
+
 
     <button type="submit" class="btn">
         Publier le cas

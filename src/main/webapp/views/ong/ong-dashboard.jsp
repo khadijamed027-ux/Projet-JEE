@@ -31,7 +31,34 @@
     <p>Gérez vos cas et consultez les dons reçus</p>
 </div>
 
+<!-- BOUTON NOTIFICATIONS -->
+<a class="btn btn-warning m-3"
+   href="${pageContext.request.contextPath}/notifications">
+
+   📩 Notifications ONG
+
+   <c:if test="${badgeOng > 0}">
+      <span class="badge bg-danger">${badgeOng}</span>
+   </c:if>
+
+</a>
+
 <div class="container my-5">
+
+<h4>🚨 Cas critiques</h4>
+
+<c:forEach var="c" items="${cases}">
+<c:if test="${c.niveauUrgence == 'ELEVEE' ||
+             c.niveauUrgence == 'CRITIQUE'}">
+
+<div class="alert alert-danger shadow">
+   <b>${c.titre}</b><br/>
+   Urgence : ${c.niveauUrgence}
+</div>
+
+</c:if>
+</c:forEach>
+
 
 <!-- MESSAGE ERREUR -->
 <c:if test="${not empty error}">
@@ -66,14 +93,6 @@
     </div>
 </div>
 
-<!-- DESCRIPTION -->
-<div class="card mb-4">
-    <div class="card-body">
-        <h5>Description</h5>
-        <p>${ong.description}</p>
-    </div>
-</div>
-
 <!-- BOUTON CREER CAS -->
 <div class="text-end mb-3">
     <a class="btn btn-success"
@@ -82,7 +101,7 @@
     </a>
 </div>
 
-<!-- LISTE DES CAS + DONS -->
+<!-- LISTE DES CAS -->
 <div class="card">
 <div class="card-body">
 
@@ -102,6 +121,7 @@
     <th>Titre</th>
     <th>Description</th>
     <th>Dons reçus</th>
+    <th>Actions</th>
 </tr>
 </thead>
 
@@ -110,8 +130,10 @@
 <c:forEach var="c" items="${cases}">
 <tr>
     <td>${c.titre}</td>
+
     <td>${c.description}</td>
 
+    <!-- DONS -->
     <td>
         <c:choose>
 
@@ -134,12 +156,58 @@
 
         </c:choose>
     </td>
+
+    <!-- 🔴 ACTIONS MODIFIER / SUPPRIMER -->
+    <td>
+        <a class="btn btn-warning btn-sm"
+           href="${pageContext.request.contextPath}/editCase?id=${c.id}">
+           ✏ Modifier
+        </a>
+        
+        
+
+        <a class="btn btn-danger btn-sm"
+           href="${pageContext.request.contextPath}/case/delete?id=${c.id}"
+           onclick="return confirm('Voulez-vous vraiment supprimer ce cas ?')">
+           🗑 Supprimer
+        </a>
+    </td>
+
 </tr>
 </c:forEach>
 
 </tbody>
 </table>
 
+</c:if>
+
+<!-- PAGINATION -->
+<c:if test="${totalPages > 1}">
+<nav class="mt-4">
+<ul class="pagination justify-content-center">
+
+<li class="page-item ${page == 1 ? 'disabled' : ''}">
+  <a class="page-link" href="?page=${page - 1}">
+     Précédent
+  </a>
+</li>
+
+<c:forEach begin="1" end="${totalPages}" var="p">
+<li class="page-item ${p == page ? 'active' : ''}">
+  <a class="page-link" href="?page=${p}">
+     ${p}
+  </a>
+</li>
+</c:forEach>
+
+<li class="page-item ${page == totalPages ? 'disabled' : ''}">
+  <a class="page-link" href="?page=${page + 1}">
+     Suivant
+  </a>
+</li>
+
+</ul>
+</nav>
 </c:if>
 
 </div>

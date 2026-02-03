@@ -2,7 +2,9 @@ package com.ongconnect.controller;
 
 import java.io.IOException;
 
+import com.ongconnect.dao.NotificationDAO;
 import com.ongconnect.dao.ONGDAO;
+import com.ongconnect.model.Notification;
 import com.ongconnect.model.StatutValidation;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -14,23 +16,24 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ValidateONGServlet extends HttpServlet {
 
     private ONGDAO ongDAO = new ONGDAO();
+    private NotificationDAO notifDAO = new NotificationDAO();
 
-    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        Long ongId;
-        try {
-            ongId = Long.parseLong(req.getParameter("ongId"));
-        } catch (Exception e) {
-            resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-            return;
-        }
+        Long ongId = Long.parseLong(req.getParameter("ongId"));
 
         ongDAO.updateStatut(ongId, StatutValidation.VALIDEE);
 
-        resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-    }
+        // 🔔 notif ONG
+        Notification n = new Notification();
+        n.setMessage("Votre ONG a été VALIDÉE par l'administrateur");
+        n.setOngId(ongId);
+        n.setLu(false);
 
+        notifDAO.save(n);
+
+        resp.sendRedirect("dashboard");
+    }
 }
 

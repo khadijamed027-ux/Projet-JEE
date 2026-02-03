@@ -1,48 +1,66 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+
 <meta charset="UTF-8">
 <title>ONG refusée</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<style>
+body {
+  background: #f4f6f9;
+}
+
+.card {
+  max-width: 800px;
+  margin: 60px auto;
+  border-radius: 12px;
+}
+
+.icon {
+  font-size: 60px;
+}
+</style>
+
 </head>
 
-<body class="bg-light">
+<body>
 
-<div class="container mt-5">
-  <div class="alert alert-danger text-center shadow p-4">
+<div class="card shadow">
+<div class="card-body text-center">
 
-    <h3>❌ ONG refusée</h3>
+<div class="icon">❌</div>
 
-    <p class="mt-3">
-      Désolé, votre ONG n’a pas été validée par l’administrateur.
-    </p>
+<h3 class="mt-3 text-danger">ONG refusée</h3>
 
-    <p>
-      Vous pouvez :
-    </p>
+<p class="mt-3">
+  Désolé, votre ONG n’a pas été validée par l’administrateur.
+</p>
 
-    <ul class="text-start d-inline-block">
-      <li>Modifier les informations de votre ONG</li>
-      <li>Contacter l’administrateur pour plus de détails</li>
-      <li>Créer une nouvelle demande</li>
-    </ul>
+<div class="alert alert-light text-start mt-4">
+<b>Vous pouvez :</b>
+<ul>
+  <li>Vérifier les informations saisies</li>
+  <li>Améliorer la description de l’ONG</li>
+  <li>Recréer une nouvelle demande</li>
+</ul>
+</div>
 
-    <div class="mt-4">
-      <a href="${pageContext.request.contextPath}/views/ong/create-ong.jsp"
-         class="btn btn-primary">
-         Recréer une ONG
-      </a>
+<div class="mt-4">
+  <a href="${pageContext.request.contextPath}/views/ong/create-ong.jsp"
+     class="btn btn-primary">
+     Recréer une ONG
+  </a>
 
-      <a href="${pageContext.request.contextPath}/logout"
-         class="btn btn-secondary">
-         Déconnexion
-      </a>
-    </div>
+  <a href="${pageContext.request.contextPath}/logout"
+     class="btn btn-secondary">
+     Déconnexion
+  </a>
+</div>
 
-  </div>
+</div>
 </div>
 
 </body>

@@ -1,8 +1,13 @@
 package com.ongconnect.controller;
 
 import com.ongconnect.dao.DonationDAO;
+import com.ongconnect.dao.NotificationDAO;
+import com.ongconnect.model.CaseReport;
 import com.ongconnect.model.Donation;
+import com.ongconnect.model.Notification;
 import com.ongconnect.model.User;
+import com.ongconnect.service.CaseService;
+import com.ongconnect.service.impl.CaseServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,35 +18,37 @@ import java.io.IOException;
 @WebServlet("/donate/confirm")
 public class DonateConfirmServlet extends HttpServlet {
 
-    private DonationDAO donationDAO = new DonationDAO();
+    private DonationDAO dao = new DonationDAO();
+    private CaseService caseService = new CaseServiceImpl();
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req,
+                          HttpServletResponse resp)
+            throws IOException, ServletException {
 
-        try {
-            Long caseId = Long.parseLong(req.getParameter("caseId"));
-            double montant = Double.parseDouble(req.getParameter("montant"));
+        Long caseId = Long.parseLong(req.getParameter("caseId"));
+        double montant = Double.parseDouble(req.getParameter("montant"));
 
-            Donation d = new Donation();
-            d.setCaseId(caseId);
-            d.setMontant(montant);
+        CaseReport c = caseService.getCaseById(caseId);
 
-            // 🔹 Donateur ANONYME
-            User u = (User) req.getSession().getAttribute("user");
+        if (c.getTotalDons() >= c.getObjectif()) {
 
-            if (u != null) {
-                d.setDonorId(u.getId());
-            } else {
-                d.setDonorId(1L); // compte "donateur anonyme" par défaut
-            }
+            req.setAttribute("erreur",
+              "❌ Objectif atteint, impossible de faire un don.");
 
-            donationDAO.save(d);
+            req.setAttribute("cas", c);
 
-            resp.sendRedirect(req.getContextPath() + "/views/public/donation-success.jsp");
-
-        } catch (Exception e) {
-            resp.sendRedirect(req.getContextPath() + "/");
+            req.getRequestDispatcher("/views/public/donate.jsp")
+               .forward(req, resp);
+            return;
         }
+
+        Donation d = new Donation();
+        d.setCaseId(caseId);
+        d.setMontant(montant);
+
+        dao.save(d);
+
+        resp.sendRedirect(req.getContextPath() + "/views/public/merci.jsp");
+
     }
 }

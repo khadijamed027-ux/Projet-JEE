@@ -1,4 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +12,7 @@
             background: #f4f6f9;
             margin: 0;
         }
+
         .container {
             max-width: 600px;
             margin: 60px auto;
@@ -18,19 +21,41 @@
             border-radius: 14px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
+
         h1 {
             text-align: center;
             color: #27ae60;
         }
+
         .info {
             margin: 20px 0;
             color: #555;
+            line-height: 1.6;
         }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .alert-danger {
+            background: #ffe6e6;
+            color: #c0392b;
+        }
+
+        .alert-success {
+            background: #e8f8f5;
+            color: #27ae60;
+        }
+
         label {
             display: block;
             margin-top: 20px;
             font-weight: bold;
         }
+
         input {
             width: 100%;
             padding: 12px;
@@ -38,6 +63,7 @@
             border-radius: 6px;
             border: 1px solid #ccc;
         }
+
         button {
             margin-top: 30px;
             width: 100%;
@@ -49,8 +75,14 @@
             font-size: 16px;
             cursor: pointer;
         }
+
         button:hover {
             background: #1e8449;
+        }
+
+        .disabled {
+            background: gray !important;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -58,23 +90,48 @@
 <body>
 
 <div class="container">
+
     <h1>Faire un don ❤️</h1>
 
     <div class="info">
         <strong>Cas :</strong> ${cas.titre}<br>
-        <strong>Localisation :</strong> ${cas.localisation}
+        <strong>Localisation :</strong> ${cas.localisation}<br>
+        <strong>Total dons :</strong> ${cas.totalDons} MRU<br>
+        <strong>Objectif :</strong> ${cas.objectif} MRU
     </div>
 
-    <form action="${pageContext.request.contextPath}/donate/confirm" method="post">
-        <input type="hidden" name="caseId" value="${cas.id}">
+    <!-- 🔴 SI OBJECTIF ATTEINT -->
+    <c:if test="${cas.bloque}">
+        <div class="alert alert-danger">
+            🎯 Objectif atteint – Les dons sont fermés pour ce cas.
+        </div>
+    </c:if>
 
-        <label>Montant du don (MAD)</label>
-        <input type="number" name="montant" min="10" required>
+    <!-- 🟢 SINON ON AFFICHE LE FORMULAIRE -->
+    <c:if test="${!cas.bloque}">
+        <div class="alert alert-success">
+            Ce cas a encore besoin de soutien 🙏
+        </div>
 
-        <button type="submit">
-            Confirmer le don
-        </button>
-    </form>
+        <form action="${pageContext.request.contextPath}/donate/confirm"
+              method="post">
+
+            <input type="hidden" name="caseId" value="${cas.id}">
+
+            <label>Montant du don (MRU)</label>
+            <input type="number"
+                   name="montant"
+                   min="10"
+                   max="${cas.objectif - cas.totalDons}"
+                   required>
+
+            <button type="submit">
+                Confirmer le don
+            </button>
+
+        </form>
+    </c:if>
+
 </div>
 
 </body>

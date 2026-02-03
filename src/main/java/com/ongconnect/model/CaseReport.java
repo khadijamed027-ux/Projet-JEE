@@ -8,15 +8,19 @@ public class CaseReport {
     private String titre;
     private String description;
     private String localisation;
+
     private CaseStatus statut;
-    private LocalDateTime dateCreation;
     private TypeCase typeCase;
+    private NiveauUrgence niveauUrgence;
 
-    // ✅ LE CAS APPARTIENT À UNE ONG
+    private LocalDateTime dateCreation;
+    private double objectif;
+    private double totalDons;
+
     private Long ongId;
+    
 
-    public CaseReport() {}
-
+    // GETTERS SETTERS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -32,12 +36,46 @@ public class CaseReport {
     public CaseStatus getStatut() { return statut; }
     public void setStatut(CaseStatus statut) { this.statut = statut; }
 
-    public LocalDateTime getDateCreation() { return dateCreation; }
-    public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
-
     public TypeCase getTypeCase() { return typeCase; }
     public void setTypeCase(TypeCase typeCase) { this.typeCase = typeCase; }
 
+    public NiveauUrgence getNiveauUrgence() { return niveauUrgence; }
+    public void setNiveauUrgence(NiveauUrgence niveauUrgence) {
+        this.niveauUrgence = niveauUrgence;
+    }
+
     public Long getOngId() { return ongId; }
     public void setOngId(Long ongId) { this.ongId = ongId; }
+ // 🔴 NOUVEAU
+    
+
+    public double getObjectif() {
+        return objectif;
+    }
+
+    public void setObjectif(double objectif) {
+        this.objectif = objectif;
+    }
+
+    public double getTotalDons() {
+        return totalDons;
+    }
+
+    public void setTotalDons(double totalDons) {
+        this.totalDons = totalDons;
+    }
+
+    public boolean isBloque() {
+        return totalDons >= objectif;
+    }
+    
+
+    public LocalDateTime getDateCreation() {
+        return dateCreation;
+    }
+
+    public void setDateCreation(LocalDateTime dateCreation) {
+        this.dateCreation = dateCreation;
+    }
+
 }
